@@ -1,0 +1,28 @@
+function sum = compute_sum(sample, s, h, theta, edges, maxComplexity)
+
+working_nodes = cat(1, s, h);
+mapping = compute_mapping(s, h);
+boundry = max(mapping(s))
+
+numQubits = size(h, 1) + size(s, 1)
+H = theta(mapping(h), 1);
+J = zeros(size(h, 1), size(h, 1))
+
+for i = 1:size(edges)
+    if mapping(edges(i, 1)) > boundry
+	if mapping(edges(i, 2)) > boundry
+	    J(mapping(edges(i, 1)), mapping(edges(i, 1))) = theta(i+numQubits);
+	else
+	    H(mapping(edges(i, 1))) = H(mapping(edges(i, 1))) + theta(i+numQubits)*sample(mapping(edges(i, 2)));
+	end
+    elseif mapping(edges(i, 2)) > boundry
+	H(mapping(edges(i, 2))) = H(mapping(edges(i, 2))) + theta(i+numQubits)*sample(mapping(edges(i, 1)));
+    end
+end
+
+tables = isingTables(-H, -J);
+varOrder = orang_greedyvarorder(tables, maxComplexity, [], 'mindeg');
+
+[pf t] = orang_sample(tables, varOrder, maxComplexity, 0);
+
+sum = exp(pf);

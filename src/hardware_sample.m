@@ -1,0 +1,1 @@
+function samples = hardware_sample(s, h, theta)

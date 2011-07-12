@@ -1,0 +1,7 @@
+function hard_sum = compute_vec_sum(s, nu, factor_edges)
+
+dim = size(s) + size(factor_edges, 1)
+sum
+for i = 1:dim
+end
+compute_sum(s, nu, factor_edges)
