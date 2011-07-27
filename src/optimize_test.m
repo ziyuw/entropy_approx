@@ -1,4 +1,4 @@
-sat = load('/home/zwang/development/entropy_approx/extra/3sat_1000_10000_2.txt');
+sat = load('../extra/3sat_1000_10000_2.txt');
 sat = sat(:, 1:3);
 sat_sign = sign(sat);
 sat = abs(sat);
