@@ -27,13 +27,16 @@ for i = 1:size(edges)
     J_total(mapping(edges(i, 1)), mapping(edges(i, 2))) = theta(i+numQubits);
 end
 
-tables = isingTables(-H, -J);
-varOrder = orang_greedyvarorder(tables, maxComplexity, [], 'mindeg');
-
-[pf t] = orang_sample(tables, varOrder, maxComplexity, 0);
+if size(h, 1) ~= 0
+    tables = isingTables(-H, -J);
+    varOrder = orang_greedyvarorder(tables, maxComplexity, [], 'mindeg');
+    [pf t] = orang_sample(tables, varOrder, maxComplexity, 0);
+else
+    pf = 0;
+end
 
 tables = isingTables(-H_total, -J_total);
+varOrder = orang_greedyvarorder(tables, maxComplexity, [], 'mindeg');
 [pf_total t] = orang_sample(tables, varOrder, maxComplexity, 0);
-
 
 ln_sum = pf - pf_total - s_sum;

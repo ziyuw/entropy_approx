@@ -1,4 +1,4 @@
-function grad = evaluate_grad_theta(theta, nu, auxdata)
+function grad = evaluate_grad_theta(theta, nu, auxdata, obj_func)
 % Hidden qbits (h): a list of indices
 % Visible qbits (s): a list of indices
 % theta: a vector that represents thetas (h's first J's after)
@@ -13,6 +13,8 @@ function grad = evaluate_grad_theta(theta, nu, auxdata)
 
 [s, h, edges, factor_edges, temperature, qphandle, maxComplexity, num_samples, exact] = deal(auxdata{:});
 
+nu_last = nu(size(nu, 1));
+nu = nu(1:size(nu, 1)-1, 1);
 
 %  Draw samples
 if exact
@@ -30,13 +32,16 @@ expectation_fac = zeros(size(s, 1) + size(h, 1) + size(edges, 1), 1);
 expectation_vec = zeros(size(s, 1) + size(h, 1) + size(edges, 1), 1);
 
 mapping = compute_mapping(s, h);
+empty_mapping = compute_mapping(s, []);
+empty_working_nodes = cat(1, s, []);
+working_nodes = cat(1, s, h);
 
 for i = 1:num_samples
-    func_val = funcG(samples(mapping(s), i));
-    facs = factors(samples(mapping(s), i), s, [], factor_edges);
+    func_val = obj_func(samples(mapping(s), i));
+    facs = factors(samples(mapping(s), i), s, [], factor_edges, empty_mapping, empty_working_nodes);
 
-    big_facs = factors(samples(:, i), s, h, edges);
-    product = (facs'*nu)/temperature;
+    big_facs = factors(samples(:, i), s, h, edges, mapping, working_nodes);
+    product = (facs'*nu - nu_last)/temperature;
     expectation = expectation + func_val + product;
     expectation_fac = expectation_fac + big_facs;
     expectation_vec = expectation_vec + (func_val+product)*big_facs;

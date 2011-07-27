@@ -1,4 +1,4 @@
-function samples = exact_sample(s, h, edges, theta, maxComplexity, num_samples, full_sample)
+function [samples, pf] = exact_sample(s, h, edges, theta, maxComplexity, num_samples, full_sample)
 % Draws samples by using orang_solve to get samples of s
 % h's are the hidden units and theta's are the parameters
 % edges should be calculated in accordance to workingQubits

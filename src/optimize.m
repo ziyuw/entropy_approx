@@ -1,49 +1,48 @@
-rng(112)
+function theta = optimize(theta, obj_func, num_iter, init_temp, final_temp, opt_struct)
 
-s = [1;2;3];
-h = [4];
-edges = [1,2;1,3;2,3];
-factor_edges = [1, 2; 1, 3; 2, 3];
+temp_increment = (final_temp-init_temp)/(num_iter-1);
+cur_temp = init_temp;
 
-theta = rand(size(s,1) + size(h,1) + size(edges,1), 1)*2-1;
-nu = rand(size(s, 1) + size(factor_edges,1), 1)*100-1;
+% Basic settings
+s = opt_struct.s;
+h = opt_struct.h;
+edges = opt_struct.edges;
+factor_edges = opt_struct.factor_edges;
 
-temperature = 1;
+nu = (rand(size(s, 1) + size(factor_edges,1) + 1, 1)-0.5)*2;
 qphandle = 0;
-exact = true;
 
-maxComplexity = 20;
-num_samples = 1000;
-auxdata = {s, h, edges, factor_edges, temperature, qphandle, maxComplexity, num_samples, exact};
+if ~opt_struct.exact
+    qphandle = opt_struct.qphandle;
+end
 
-lb = zeros(size(theta)) - 1;
-ub = zeros(size(theta)) + 1;
+maxComplexity = 2000;
+if isfield(opt_struct, 'maxComplexity')
+    maxComplexity = opt_struct.maxComplexity;
+end
 
-approx_true_obj = true_obj(s, h, theta, edges, maxComplexity, temperature, num_samples)
+num_samples = 100;
+if isfield(opt_struct, 'maxComplexity')
+    num_samples = opt_struct.num_samples;
+end
 
-min_conf_options.verbose = 0;
-min_conf_options.Method = 'lbfgs';
-min_conf_options.numDiff = false;
+auxdata = {s, h, edges, factor_edges, cur_temp, qphandle, maxComplexity, num_samples, opt_struct.exact};
 
-minFunc_optitions.Display = 'off';
-minFunc_optitions.Method = 'qnewton';
 
-nu = minFunc(@(nu)min_conf_obj_nu(nu, theta, auxdata), nu, minFunc_optitions);
-original_obj = evaluate_obj(theta, nu, auxdata)
+for n = 1:num_iter
 
-%  
-%  nu = minFunc(@(nu)min_conf_obj_nu(nu, theta, auxdata), nu, options);
-%  
-%  for k = 1:10
-%      nu = minFunc(@(nu)min_conf_obj_nu(nu, theta, auxdata), nu, minFunc_optitions);
-%      max_obj = evaluate_obj(theta, nu, auxdata)
-%      theta = minConf_TMP(@(theta)min_conf_obj_theta(theta, nu, auxdata), theta, lb, ub, min_conf_options)
-%      min_obj = evaluate_obj(theta, nu, auxdata)
-%  end
-%  nu = minFunc(@(nu)min_conf_obj_nu(nu, theta, auxdata), nu, minFunc_optitions);
-%  max_obj = evaluate_obj(theta, nu, auxdata)
-%  
-%  g = evaluate_grad_theta(theta, nu, auxdata)
-%  final_obj = evaluate_obj(theta, nu, auxdata)
-%  
-%  %  x = lbfgsb(theta, lb, ub, 'evaluate_obj', 'evaluate_grad_theta', auxdata, 'empty_func', 'm', 1000);
+    auxdata{5} = cur_temp;
+    old_theta = theta;
+    method = 'trust';
+    m = 4;
+    if n == num_iter
+	method = 'trust';
+	m = 4;
+    end
+    
+    [theta, nu] = optimize_iter(nu, theta, auxdata, obj_func, m, method);
+    
+    fprintf('Change in norm of theta: %f; Temperature: %f\n', norm(theta-old_theta), 1/cur_temp);
+    cur_temp = cur_temp + temp_increment;
+end
+

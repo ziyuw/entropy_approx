@@ -1,3 +1,0 @@
-function vec = phi(s)
-
-return s

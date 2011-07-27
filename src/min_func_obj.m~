@@ -1,4 +1,0 @@
-function [obj, grad] = min_func_obj(theta, nu, auxdata)
-
-obj = evaluate_obj(theta, nu, auxdata);
-grad = evaluate_grad_theta(theta, nu, auxdata);
