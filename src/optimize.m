@@ -34,10 +34,10 @@ for n = 1:num_iter
     auxdata{5} = cur_temp;
     old_theta = theta;
     method = 'trust';
-    m = 4;
+    m = 5;
     if n == num_iter
 	method = 'trust';
-	m = 4;
+	m = 5;
     end
     
     [theta, nu] = optimize_iter(nu, theta, auxdata, obj_func, m, method);
