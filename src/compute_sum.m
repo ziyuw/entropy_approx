@@ -1,4 +1,4 @@
-function sum = compute_sum(s, h, nu, factor_edges, maxComplexity)
+function [sum, samples, log_sum] = compute_sum(s, h, nu, factor_edges, maxComplexity, num_samples)
 % Computes the sum by using orang_sample
 
 working_nodes = s;
@@ -15,6 +15,13 @@ end
 tables = isingTables(H, J);
 varOrder = orang_greedyvarorder(tables, maxComplexity, [], 'mindeg');
 
-[pf t] = orang_sample(tables, varOrder, maxComplexity, 0);
 
-sum = exp(pf)/exp(1);
+if exist('num_samples')
+    [pf samples t] = orang_sample(tables, varOrder, maxComplexity, num_samples);
+    samples = (samples-1)*2-1;
+else
+    [pf t] = orang_sample(tables, varOrder, maxComplexity, 0);
+end
+
+sum = exp(pf-1);
+log_sum = pf - 1;

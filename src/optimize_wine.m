@@ -43,7 +43,7 @@ original_obj = evaluate_obj(theta, nu, auxdata, obj_func)
 
 % Optimization
 tic
-num_iter = 100;
+num_iter = 10;
 [theta, nu] = optimize_iter(nu, theta, auxdata, obj_func, num_iter, 'trust');
 optimization_time = toc
 

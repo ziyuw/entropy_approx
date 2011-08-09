@@ -53,5 +53,6 @@ for i = 1:num_samples
 end
 
 expectation_fac = expectation_fac/num_samples;
+vec_sum = compute_vec_sum(s, [], nu, factor_edges, maxComplexity, 1000);
 
-grad = (cat(1, expectation_fac, [-1]) - compute_vec_sum(s, [], nu, factor_edges, maxComplexity))/temperature;
+grad = (cat(1, expectation_fac, [-1]) - vec_sum)/temperature;

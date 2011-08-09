@@ -1,4 +1,4 @@
-sat = load('../extra/3sat_1000_10000_2.txt');
+sat = load('../extra/maxsat_300_10000_2.txt');
 sat = sat(:, 1:3);
 sat_sign = sign(sat);
 sat = abs(sat);
@@ -15,27 +15,32 @@ obj_func = @(x)(-sat_func(x, sat, sat_sign));
 %  goal = 609183;
 %  obj_func = @(x)subset_sum_func(x, vec, goal);
 
-num_variable = 1000;
+num_variable = 300;
 
 % Basic settings
 s = (1:num_variable)';
 h = [];
 
-s = (1:num_variable)';
-h = [];
 edges = cat(2, (1:num_variable-1)', (2:num_variable)');
-factor_edges = cat(2, (1:num_variable-1)', (2:num_variable)');
+factor_edges = edges;
+
+%  factor_edges = [1,2];
+
+%  cut = rand(1, num_variable-1) > 0.3;
+%  edges = cat(2, find((1:num_variable-1).*cut)', (find((2:num_variable).*cut)+1)');
+%  factor_edges = edges;
+
 
 % Use the Chimara
-%  [s, edges] = qpChimeraConnectivity(2,2,4);
+%  [s, edges, A] = qpChimeraConnectivity(2,2,4);
 %  h = [];
 %  factor_edges = edges;
 
 tic
 theta = (rand(size(s,1) + size(h,1) + size(edges,1), 1)*2-1);
 
-init_temp = 0.1;
-final_temp = 2;
+init_temp = 0.02;
+final_temp = 0.5;
 qphandle = 0;
 exact = true;
 
@@ -51,10 +56,12 @@ opt_struct.factor_edges = factor_edges;
 opt_struct.exact = exact;
 opt_struct.maxComplexity = maxComplexity;
 opt_struct.num_samples = num_samples;
+opt_struct.method = 'trust';
+opt_struct.m = 10;
 
 theta = optimize(theta, obj_func, num_iter, init_temp, final_temp, opt_struct);
 
-num_samples = 10000;
+num_samples = 5000;
 [samples, pf] = exact_sample(s, h, edges, theta, maxComplexity, num_samples);
 
 best_sample = [];
@@ -73,7 +80,7 @@ fprintf('Algorithm Time: %3.2d Best Val: %5.1f  Average Val: %5.1f\n', algorithm
 
 % Drawing complete random samples
 tic
-num_samples = 10000;
+num_samples = 5000;
 samples = (rand(size(s, 1), num_samples)<0.5)*2-1;
 
 best_sample = [];

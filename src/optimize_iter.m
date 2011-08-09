@@ -1,4 +1,4 @@
-function [theta, nu] = optimize_iter(nu, theta, auxdata, obj_func, num_iter, method)
+function [theta, nu, trust_struct] = optimize_iter(nu, theta, auxdata, obj_func, num_iter, method, trust_struct)
 
 % Set the lower and the uppper bounda
 lb = zeros(size(theta)) - 1;
@@ -10,7 +10,7 @@ ub = zeros(size(theta)) + 1;
 
 % Optimization
 if strcmp('trust', method)
-    [theta, nu] = trust_region_opt(nu, theta, auxdata, obj_func, lb, ub, num_iter);
+    [theta, nu, trust_struct] = trust_region_opt(nu, theta, auxdata, obj_func, lb, ub, num_iter, 'opt', trust_struct);
 elseif strcmp('alternate', method)
     [theta, nu] = alternate_opt(nu, theta, auxdata, obj_func, lb, ub, num_iter);
 else

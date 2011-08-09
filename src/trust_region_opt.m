@@ -4,7 +4,7 @@ function [theta, nu, trust_struct] = trust_region_opt(nu, theta, auxdata, obj_fu
 min_conf_options.verbose = 0;
 min_conf_options.Method = 'lbfgs';
 min_conf_options.numDiff = false;
-min_conf_options.maxIter = 10;
+min_conf_options.maxIter = 250;
 
 minFunc_optitions.Display = 'off';
 minFunc_optitions.Method = 'qnewton';
@@ -15,6 +15,13 @@ if nargin > 7 && strcmp('mcmc', usage)
     num_iter = trust_struct.iter;
     accumulate_samples = true;
     anneal = true;
+elseif nargin > 7 && strcmp('opt', usage)
+    mcmc = false;
+    if num_iter == 0
+	num_iter = trust_struct.iter;
+    end
+    accumulate_samples = false;
+    anneal = false;
 elseif nargin <= 7 || strcmp('opt', usage)
     mcmc = false;
     trust_struct = struct('trust_radius', 0.1, 'max_obj', 0, 'min_obj', 0, 'iter', 1);
@@ -33,11 +40,16 @@ while trust_struct.iter <= num_iter
     
     if trust_struct.iter ~= 1
 	rho = (old_max_obj - trust_struct.max_obj)/(old_max_obj - trust_struct.min_obj);
-	if rho < 0.3
+	if rho < 0.2
 	    trust_struct.trust_radius = trust_struct.trust_radius/2;
-	elseif rho >= 0.7
+	elseif rho >= 0.6
 	    trust_struct.trust_radius = min(trust_struct.trust_radius*2, 1);
 	end
+
+        if rho < 0
+            theta = old_theta;
+%              trust_struct.trust_radius = trust_struct.trust_radius/2;
+        end
     end
 
     old_theta = theta;

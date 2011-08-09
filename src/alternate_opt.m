@@ -9,6 +9,8 @@ minFunc_optitions.Method = 'qnewton';
 
 for iter = 1:num_iter + 1
     nu = minFunc(@(nu)min_conf_obj_nu(nu, theta, auxdata, obj_func), nu, minFunc_optitions);
+    max_obj = evaluate_obj(theta, nu, auxdata, obj_func);
+    fprintf('Iteration: %2d  Max Func Value: %3.2f\n', iter, max_obj);
 
     if iter == num_iter+1, break, end
 
