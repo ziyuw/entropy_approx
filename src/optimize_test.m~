@@ -62,7 +62,7 @@ opt_struct.init_temp = init_temp;
 opt_struct.final_temp = final_temp;
 opt_struct.num_iter = num_iter;
 
-% Do Optimization
+% Do optimization
 theta = optimize(obj_func, opt_struct);
 
 num_samples = 5000;

@@ -59,7 +59,7 @@ for n = 1:num_iter
 	[theta, nu] = optimize_iter(nu, theta, auxdata, obj_func, m, method);
     end
     if nargout >= 2
-        array(n, :) = {cur_temp, theta};
+        array(n, 1) = {cur_temp, theta};
     end
     fprintf('Change in norm of theta: %f; Temperature: %f\n', norm(theta-old_theta), 1/cur_temp);
     cur_temp = cur_temp + temp_increment;

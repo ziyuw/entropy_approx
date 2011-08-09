@@ -45,7 +45,7 @@ original_obj = evaluate_obj(theta, nu, auxdata, obj_func)
 tic
 num_iter = 10;
 trust_struct = struct('trust_radius', 0.1, 'max_obj', 0, 'min_obj', 0, 'iter', 1);
-[theta, nu, trust_struct] = optimize_iter(nu, theta, auxdata, obj_func, num_iter, 'trust', trust_struct);
+%  [theta, nu, trust_struct] = optimize_iter(nu, theta, auxdata, obj_func, num_iter, 'trust', trust_struct);
 optimization_time = toc
 
 % Compute the approximate true objective given theta
